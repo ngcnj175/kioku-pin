@@ -985,6 +985,8 @@ html, body {
 }
 .confirm-actions { display: flex; justify-content: flex-end; gap: 10px; }
 .confirm-actions .chip { min-width: 84px; text-align: center; }
+.confirm-actions .chip:focus,
+.confirm-actions .chip:focus-visible { outline: none; }
 .locked-title { font-size: 16px; letter-spacing: 0.1em; margin: 0 0 6px; }
 .locked-sub { font-size: 12px; color: var(--dim); margin: 0 0 12px; }
 
