@@ -61,6 +61,54 @@ const RADAR_TOGGLES_STORAGE = "kiokupin.radar.toggles.v1";
 // 投稿時の可視性: 'public' | 'private' | 'keyed'
 let _composeVisibility = "public";
 
+// ---------- 汎用確認モーダル（ネイティブ confirm の代替） ----------
+// origin プレフィックス（"ngcnj175.github.io の内容" 等）を出さないためのカスタム実装。
+// 使い方: if (await appConfirm(msg)) { ... }
+function appConfirm(message, opts) {
+  const modal = document.getElementById("app-confirm");
+  const msgEl = document.getElementById("app-confirm-msg");
+  const okBtn = document.getElementById("app-confirm-ok");
+  const cancelBtn = document.getElementById("app-confirm-cancel");
+  if (!modal || !msgEl || !okBtn || !cancelBtn) {
+    // フォールバック（万一 DOM が無い環境向け）
+    return Promise.resolve(window.confirm(message));
+  }
+  const okText = (opts && opts.okText) || (typeof t === "function" ? t("common.ok") : null) || "OK";
+  const cancelText =
+    (opts && opts.cancelText) || (typeof t === "function" ? t("common.cancel") : null) || "やめる";
+  msgEl.textContent = message == null ? "" : String(message);
+  okBtn.textContent = okText;
+  cancelBtn.textContent = cancelText;
+  modal.classList.remove("hidden");
+
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = (val) => {
+      if (done) return;
+      done = true;
+      okBtn.removeEventListener("click", onOk);
+      cancelBtn.removeEventListener("click", onCancel);
+      modal.removeEventListener("click", onBackdrop);
+      document.removeEventListener("keydown", onKey);
+      modal.classList.add("hidden");
+      resolve(val);
+    };
+    const onOk = () => finish(true);
+    const onCancel = () => finish(false);
+    const onBackdrop = (e) => { if (e.target === modal) finish(false); };
+    const onKey = (e) => {
+      if (e.key === "Escape") finish(false);
+      else if (e.key === "Enter") finish(true);
+    };
+    okBtn.addEventListener("click", onOk);
+    cancelBtn.addEventListener("click", onCancel);
+    modal.addEventListener("click", onBackdrop);
+    document.addEventListener("keydown", onKey);
+    // フォーカス移動（可能なら OK 側）
+    try { okBtn.focus({ preventScroll: true }); } catch {}
+  });
+}
+
 function getStoredToken() {
   try { return localStorage.getItem(TOKEN_STORAGE_KEY) || null; }
   catch { return null; }
@@ -932,8 +980,8 @@ async function setRadarToggle(kind, on) {
   if (kind === "mine" && on && !_currentUser) {
     showToast(t("toast.login_needed_self"));
     // 少し待って自動的にログイン誘導
-    setTimeout(() => {
-      if (confirm(t("confirm.login_google"))) goToLogin();
+    setTimeout(async () => {
+      if (await appConfirm(t("confirm.login_google"))) goToLogin();
     }, 400);
     return;
   }
@@ -1068,9 +1116,9 @@ function showScreen(id) {
 
 // ---------- 記憶を置く ----------
 // ＋記憶を置くボタン押下：GPS精度チェック→OKなら写真選択起動
-function onPlaceButtonTap() {
+async function onPlaceButtonTap() {
   if (!_currentUser) {
-    if (confirm(t("confirm.login_to_pin"))) goToLogin();
+    if (await appConfirm(t("confirm.login_to_pin"))) goToLogin();
     return;
   }
   if (!myPos) {
@@ -1511,9 +1559,9 @@ function drawerInit() {
     drawerRender();
     drawerUpdateActionButtons();
   });
-  bindTap(document.getElementById("draw-clear"), () => {
+  bindTap(document.getElementById("draw-clear"), async () => {
     if (!drawer.strokes.length) return;
-    if (!confirm(t("confirm.clear_drawing"))) return;
+    if (!(await appConfirm(t("confirm.clear_drawing")))) return;
     drawer.strokes = [];
     drawer.redo = [];
     drawerRender();
@@ -1776,7 +1824,7 @@ async function savePlaced() {
   }
   if (!_currentUser) {
     closeComposeSheet();
-    if (confirm(t("confirm.login_to_pin"))) goToLogin();
+    if (await appConfirm(t("confirm.login_to_pin"))) goToLogin();
     return;
   }
   _saving = true;
@@ -1826,7 +1874,7 @@ async function savePlaced() {
   } catch (e) {
     if (e.message === "unauthorized") {
       closeComposeSheet();
-      if (confirm(t("confirm.login_generic"))) goToLogin();
+      if (await appConfirm(t("confirm.login_generic"))) goToLogin();
     } else if (e.message === "key_conflict") {
       showToast(t("toast.key_conflict"));
     } else if (e.message === "key_invalid") {
@@ -2135,7 +2183,7 @@ function openHistorySortMenu(tabKey) {
 
 async function openHistory() {
   if (!_currentUser) {
-    if (confirm(t("confirm.login_to_history"))) goToLogin();
+    if (await appConfirm(t("confirm.login_to_history"))) goToLogin();
     return;
   }
   await refreshCurrentHistoryTab();
@@ -2441,7 +2489,7 @@ function renderHistoryList() {
         } catch (err) {
           visInput.checked = !visInput.checked;
           if (err.message === "unauthorized") {
-            if (confirm(t("confirm.login_generic"))) goToLogin();
+            if (await appConfirm(t("confirm.login_generic"))) goToLogin();
           } else {
             showToast(t("toast.change_failed"));
           }
@@ -2460,23 +2508,23 @@ function renderHistoryList() {
     swipe.appendChild(delBtn);
     row.appendChild(swipe);
 
-    attachHistorySwipe(item, swipe, () => {
+    attachHistorySwipe(item, swipe, async () => {
       if (isFindsTab) {
-        if (!confirm(t("confirm.unfave"))) {
+        if (!(await appConfirm(t("confirm.unfave")))) {
           swipe.classList.remove("revealed");
           return;
         }
         toggleFindMemory(m.id, false).then(() => {
           renderHistoryList();
           renderRadar();
-        }).catch((e) => {
+        }).catch(async (e) => {
           if (e.message === "unauthorized") {
-            if (confirm(t("confirm.login_generic"))) goToLogin();
+            if (await appConfirm(t("confirm.login_generic"))) goToLogin();
           } else showToast(t("toast.unfave_failed"));
         });
         return;
       }
-      if (!confirm(t("confirm.pickup"))) {
+      if (!(await appConfirm(t("confirm.pickup")))) {
         swipe.classList.remove("revealed");
         return;
       }
@@ -2569,7 +2617,7 @@ async function deleteMemoryWithFeedback(id, { onSuccess } = {}) {
   } catch (e) {
     if (e.message === "forbidden") showToast(t("toast.pickup_forbidden"));
     else if (e.message === "unauthorized") {
-      if (confirm(t("confirm.login_generic"))) goToLogin();
+      if (await appConfirm(t("confirm.login_generic"))) goToLogin();
     } else showToast(t("toast.pickup_failed"));
     return false;
   }
@@ -2839,7 +2887,7 @@ async function onViewerFind() {
   const m = _viewerMemory;
   if (!m) return;
   if (!_currentUser) {
-    if (confirm(t("confirm.login_generic"))) goToLogin();
+    if (await appConfirm(t("confirm.login_generic"))) goToLogin();
     return;
   }
   if (m.userId === _currentUser.id) return;
@@ -2860,7 +2908,7 @@ async function onViewerFind() {
     if (!$("history-sheet").classList.contains("hidden")) renderHistoryList();
   } catch (e) {
     if (e.message === "unauthorized") {
-      if (confirm(t("confirm.login_generic"))) goToLogin();
+      if (await appConfirm(t("confirm.login_generic"))) goToLogin();
     } else {
       showToast(t("toast.action_failed"));
     }
@@ -2877,7 +2925,7 @@ async function onViewerDelete() {
   const msg = isOwnerDelete
     ? t("confirm.pickup_owner")
     : t("confirm.pickup");
-  if (!confirm(msg)) return;
+  if (!(await appConfirm(msg))) return;
   if (btn) btn.disabled = true;
   await deleteMemoryWithFeedback(m.id, {
     onSuccess: () => {
@@ -2893,10 +2941,10 @@ async function onViewerReport() {
   const m = _viewerMemory;
   if (!m) return;
   if (!_currentUser) {
-    if (confirm(t("confirm.login_to_report"))) goToLogin();
+    if (await appConfirm(t("confirm.login_to_report"))) goToLogin();
     return;
   }
-  if (!confirm(t("confirm.report"))) return;
+  if (!(await appConfirm(t("confirm.report")))) return;
   const btn = $("viewer-report");
   if (btn) btn.disabled = true;
   try {
@@ -2914,7 +2962,7 @@ async function onViewerReport() {
     }
   } catch (e) {
     if (e.message === "unauthorized") {
-      if (confirm(t("confirm.login_generic"))) goToLogin();
+      if (await appConfirm(t("confirm.login_generic"))) goToLogin();
     } else if (e.message === "bad request") {
       showToast(t("toast.report_self"));
     } else if (e.message === "not found") {
@@ -2981,7 +3029,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   $("user-chip").addEventListener("click", async () => {
     if (_currentUser) {
-      if (!confirm(t("topbar.logout_confirm", { name: _currentUser.name || t("topbar.account_default") }))) return;
+      if (!(await appConfirm(t("topbar.logout_confirm", { name: _currentUser.name || t("topbar.account_default") })))) return;
       try { await apiFetch("/api/auth/logout", { method: "POST" }); } catch {}
       setStoredToken(null);
       _currentUser = null; _myCache = [];

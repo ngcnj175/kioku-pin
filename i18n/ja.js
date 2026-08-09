@@ -10,6 +10,7 @@
       close: "閉じる",
       back: "戻る",
       cancel: "やめる",
+      ok: "OK",
       copy: "コピー",
       share: "共有",
       allow: "許可する",

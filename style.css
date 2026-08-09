@@ -975,6 +975,15 @@ html, body {
   color: var(--ink);
 }
 .modal-card h3 { margin: 0 0 12px; font-weight: 400; letter-spacing: 0.1em; }
+.confirm-card { max-width: 340px; }
+.confirm-msg {
+  margin: 4px 0 18px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+.confirm-actions { display: flex; justify-content: flex-end; gap: 10px; }
 .locked-title { font-size: 16px; letter-spacing: 0.1em; margin: 0 0 6px; }
 .locked-sub { font-size: 12px; color: var(--dim); margin: 0 0 12px; }
 

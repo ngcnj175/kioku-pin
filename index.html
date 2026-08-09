@@ -444,6 +444,17 @@
     </div>
   </div>
 
+  <!-- 汎用確認モーダル（ネイティブ confirm の代替） -->
+  <div id="app-confirm" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="app-confirm-msg">
+    <div class="modal-card confirm-card">
+      <p id="app-confirm-msg" class="confirm-msg"></p>
+      <div class="actions confirm-actions">
+        <button id="app-confirm-cancel" class="ghost" type="button" data-i18n="common.cancel">やめる</button>
+        <button id="app-confirm-ok" class="primary" type="button">OK</button>
+      </div>
+    </div>
+  </div>
+
   <!-- 方位センサー許可プロンプト（iOS用） -->
   <div id="orient-prompt" class="modal hidden">
     <div class="modal-card">

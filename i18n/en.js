@@ -8,6 +8,7 @@
       close: "Close",
       back: "Back",
       cancel: "Cancel",
+      ok: "OK",
       copy: "Copy",
       share: "Share",
       allow: "Allow",
