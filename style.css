@@ -1791,6 +1791,7 @@ button.ghost.danger { color: var(--danger); border-color: rgba(167, 68, 98, 0.4)
   -webkit-tap-highlight-color: transparent;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
   transition: opacity 0.2s ease;
+  white-space: nowrap;
 }
 .viewer-delete:hover,
 .viewer-report:hover,
@@ -1799,6 +1800,7 @@ button.ghost.danger { color: var(--danger); border-color: rgba(167, 68, 98, 0.4)
 .viewer-delete .delete-icon {
   width: 17px;
   height: 17px;
+  flex-shrink: 0;
   fill: none;
   stroke: #fff;
   stroke-width: 1.6;

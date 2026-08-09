@@ -225,7 +225,7 @@
       next: "Next memory",
       favorite: "Favorite",
       report: "Report",
-      pickup: "Delete memory",
+      pickup: "Delete",
       pickup_owner: "Delete (owner)",
       close: "✕ Close",
     },
