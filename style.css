@@ -984,6 +984,20 @@ html, body {
   white-space: pre-wrap;
 }
 .confirm-actions { display: flex; justify-content: flex-end; gap: 10px; }
+/* 確認モーダルの2ボタンは「タップで確定」なので、
+   primary / ghost の視覚差を打ち消して同一ビジュアルにする */
+.confirm-actions button.primary,
+.confirm-actions button.ghost {
+  background: #7A8494;
+  color: #fff;
+  border: 1px solid #7A8494;
+  min-width: 84px;
+  text-align: center;
+}
+.confirm-actions button.primary:focus,
+.confirm-actions button.ghost:focus,
+.confirm-actions button.primary:focus-visible,
+.confirm-actions button.ghost:focus-visible { outline: none; }
 .locked-title { font-size: 16px; letter-spacing: 0.1em; margin: 0 0 6px; }
 .locked-sub { font-size: 12px; color: var(--dim); margin: 0 0 12px; }
 
