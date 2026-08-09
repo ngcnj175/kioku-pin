@@ -1,6 +1,6 @@
 -- グループキーの所有者とモード（owner_only / open）を管理するテーブル。
 -- owner_only: 発行者のみ投稿可（従来動作）
--- open      : キーを知っていれば誰でも投稿可（オーナーは他人投稿も回収可）
+-- open      : キーを知っていれば誰でも投稿可（オーナーは他人投稿も削除可）
 CREATE TABLE IF NOT EXISTS access_keys (
   key        TEXT PRIMARY KEY,
   owner_id   TEXT NOT NULL,

@@ -1712,7 +1712,7 @@ button.ghost.danger { color: var(--danger); border-color: rgba(167, 68, 98, 0.4)
   line-height: 1;
 }
 
-/* ビューア下部のアクションボタン群（回収 / 通報 / 閉じる） */
+/* ビューア下部のアクションボタン群（削除 / 通報 / 閉じる） */
 .viewer-flip-nav {
   display: flex;
   align-items: center;

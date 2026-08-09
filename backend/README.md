@@ -130,7 +130,7 @@ python -m http.server 8000
 | GET | `/api/memories` | - | 全公開記憶（最新1000件） |
 | GET | `/api/me/memories` | ✓ | 自分の記憶 |
 | POST | `/api/memories` | ✓ | 記憶を置く（multipart） |
-| DELETE | `/api/memories/:id` | ✓＋所有者 | 記憶を回収 |
+| DELETE | `/api/memories/:id` | ✓＋所有者 | 記憶を削除 |
 | GET | `/api/memories/:id/image` | - | 画像取得 |
 
 ## セキュリティ
