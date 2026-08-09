@@ -2328,7 +2328,19 @@ function renderHistoryList() {
     const delBtn = document.createElement("button");
     delBtn.className = "history-delete";
     delBtn.type = "button";
-    delBtn.textContent = isFindsTab ? t("history.unfave") : t("history.pickup_short");
+    if (isFindsTab) {
+      delBtn.textContent = t("history.unfave");
+    } else {
+      delBtn.classList.add("is-pickup");
+      delBtn.setAttribute("aria-label", t("history.pickup_short"));
+      delBtn.innerHTML =
+        '<svg class="history-delete-icon" viewBox="0 0 24 24" aria-hidden="true">' +
+          '<path d="M10 11v6"/><path d="M14 11v6"/>' +
+          '<path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>' +
+          '<path d="M3 6h18"/>' +
+          '<path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>' +
+        '</svg>';
+    }
 
     const item = document.createElement("div");
     item.className = "history-item";
