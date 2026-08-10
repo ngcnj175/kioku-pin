@@ -1656,8 +1656,20 @@ function drawStrokeOnCtx(ctx, s, W, H) {
   ctx.strokeStyle = s.c;
   ctx.lineWidth = Math.max(1, s.w * W);
   ctx.beginPath();
-  ctx.moveTo(s.p[0][0] * W, s.p[0][1] * H);
-  for (let i = 1; i < s.p.length; i++) ctx.lineTo(s.p[i][0] * W, s.p[i][1] * H);
+  const p0x = s.p[0][0] * W, p0y = s.p[0][1] * H;
+  ctx.moveTo(p0x, p0y);
+  if (s.p.length === 2) {
+    ctx.lineTo(s.p[1][0] * W, s.p[1][1] * H);
+  } else {
+    // 各アンカーを制御点、隣り合うアンカーの中点を通る二次ベジエで平滑化
+    for (let i = 1; i < s.p.length - 1; i++) {
+      const cx = s.p[i][0] * W, cy = s.p[i][1] * H;
+      const nx = s.p[i + 1][0] * W, ny = s.p[i + 1][1] * H;
+      ctx.quadraticCurveTo(cx, cy, (cx + nx) / 2, (cy + ny) / 2);
+    }
+    const last = s.p[s.p.length - 1];
+    ctx.lineTo(last[0] * W, last[1] * H);
+  }
   ctx.stroke();
   ctx.restore();
 }
@@ -1742,9 +1754,17 @@ function polaroidStrokesSVG(strokes) {
       const [x, y] = s.p[0];
       const r = Math.max(0.5, w / 2);
       d = `M ${x*W-r} ${y*H} a ${r} ${r} 0 1 0 ${r*2} 0 a ${r} ${r} 0 1 0 ${-r*2} 0`;
+    } else if (s.p.length === 2) {
+      d = `M ${s.p[0][0]*W} ${s.p[0][1]*H} L ${s.p[1][0]*W} ${s.p[1][1]*H}`;
     } else {
       d = `M ${s.p[0][0]*W} ${s.p[0][1]*H}`;
-      for (let i = 1; i < s.p.length; i++) d += ` L ${s.p[i][0]*W} ${s.p[i][1]*H}`;
+      for (let i = 1; i < s.p.length - 1; i++) {
+        const cx = s.p[i][0]*W, cy = s.p[i][1]*H;
+        const nx = s.p[i+1][0]*W, ny = s.p[i+1][1]*H;
+        d += ` Q ${cx} ${cy} ${(cx+nx)/2} ${(cy+ny)/2}`;
+      }
+      const last = s.p[s.p.length - 1];
+      d += ` L ${last[0]*W} ${last[1]*H}`;
     }
     if (isErase) {
       eraseMaskPaths.push(`<path d="${d}" stroke="#000" stroke-width="${w}" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`);
