@@ -136,8 +136,19 @@
       <button id="ar-btn" class="place-fab" type="button" data-i18n-attr="aria-label:place_fab.ar" aria-label="AR">
         <span class="place-fab__icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="26" height="26">
-            <path d="M12 2.5 20.5 7v10L12 21.5 3.5 17V7z" fill="currentColor" stroke="#619FFE" stroke-width="1.4" stroke-linejoin="round"/>
-            <path d="M12 12.2 20.5 7M12 12.2 3.5 7M12 12.2v9.3" fill="none" stroke="#619FFE" stroke-width="1.4" stroke-linejoin="round" stroke-linecap="round"/>
+            <!-- 3面を白で塗り、マスクで外形＋内側稜線を太く「切り抜く」-->
+            <defs>
+              <mask id="arCubeMask" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+                <rect width="24" height="24" fill="#fff"/>
+                <path d="M12 2.5 20.5 7v10L12 21.5 3.5 17V7z" fill="none" stroke="#000" stroke-width="1.9" stroke-linejoin="round"/>
+                <path d="M12 12.2 20.5 7M12 12.2 3.5 7M12 12.2v9.3" fill="none" stroke="#000" stroke-width="1.9" stroke-linecap="round"/>
+              </mask>
+            </defs>
+            <g mask="url(#arCubeMask)">
+              <path d="M12 2.5 L20.5 7 L12 12.2 L3.5 7 Z" fill="#ffffff"/>
+              <path d="M20.5 7 L20.5 17 L12 21.5 L12 12.2 Z" fill="rgba(255,255,255,0.55)"/>
+              <path d="M3.5 7 L12 12.2 L12 21.5 L3.5 17 Z" fill="rgba(255,255,255,0.78)"/>
+            </g>
           </svg>
         </span>
         <span class="place-fab__label">AR</span>
@@ -145,8 +156,8 @@
       <button id="place-btn" class="place-fab" type="button" data-i18n-attr="aria-label:place_fab.pin" aria-label="ここにピン">
         <span class="place-fab__icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="26" height="26" fill="none">
-            <path d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 12 8 12s8-6.75 8-12c0-4.42-3.58-8-8-8z" fill="currentColor"/>
-            <path d="M12 6.5v6M9 9.5h6" stroke="#619FFE" stroke-width="1.8" stroke-linecap="round"/>
+            <!-- ピン本体を白で塗り、＋部分は evenodd で真にくり抜き（下のガラス地が透ける） -->
+            <path fill-rule="evenodd" fill="#ffffff" d="M12 2C7.58 2 4 5.58 4 10c0 5.25 8 12 8 12s8-6.75 8-12c0-4.42-3.58-8-8-8z M11.1 6.5H12.9V8.6H15V10.4H12.9V12.5H11.1V10.4H9V8.6H11.1Z"/>
           </svg>
         </span>
         <span class="place-fab__label" data-i18n="place_fab.pin">ここにピン</span>
@@ -154,11 +165,9 @@
       <button id="history-btn" class="place-fab" type="button" data-i18n-attr="aria-label:place_fab.history" aria-label="マイページ">
         <span class="place-fab__icon" aria-hidden="true">
           <svg viewBox="0 0 24 24" width="26" height="26">
-            <!-- ポラロイド白地: 下側の余白を少しだけ厚めにするため縦長 -->
-            <rect x="5" y="2.5" width="14" height="17" rx="1.8" fill="currentColor"/>
-            <!-- 写真部分: 正方形 (11×11)、中心 (12, 9.5) -->
-            <rect x="6.5" y="4" width="11" height="11" rx="1" fill="#619FFE"/>
-            <!-- 星: 写真の中心に配置 -->
+            <!-- ポラロイド白フレーム: 中央の写真部分を evenodd でくり抜き、ガラス地が透けるように -->
+            <path fill-rule="evenodd" fill="currentColor" d="M6.8 2.5 H17.2 A1.8 1.8 0 0 1 19 4.3 V17.7 A1.8 1.8 0 0 1 17.2 19.5 H6.8 A1.8 1.8 0 0 1 5 17.7 V4.3 A1.8 1.8 0 0 1 6.8 2.5 Z M7.5 4 H16.5 A1 1 0 0 1 17.5 5 V14 A1 1 0 0 1 16.5 15 H7.5 A1 1 0 0 1 6.5 14 V5 A1 1 0 0 1 7.5 4 Z"/>
+            <!-- 星: 写真の中心（くり抜き部分の上）に配置 -->
             <path d="M12 7.0 12.68 8.87 14.66 8.93 13.09 10.16 13.65 12.07 12 10.95 10.35 12.07 10.91 10.16 9.34 8.93 11.32 8.87Z" fill="currentColor" stroke="currentColor" stroke-width="0.4" stroke-linejoin="round"/>
           </svg>
         </span>
