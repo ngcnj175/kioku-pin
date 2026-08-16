@@ -85,7 +85,7 @@ html, body {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, calc(-50% + 18px));
   margin: 0;
   line-height: 0;
   pointer-events: none;
