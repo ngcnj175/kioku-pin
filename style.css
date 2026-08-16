@@ -79,19 +79,22 @@ html, body {
 }
 /* レーダー画面の topbar は空（夜）の上に載るので白抜きに */
 #radar-screen .topbar { border-bottom-color: rgba(255, 255, 255, 0.45); }
-#radar-screen .brand { color: #ffffff; text-shadow: 0 1px 6px rgba(0, 30, 90, 0.25); }
 #radar-screen .topbar .chip { color: #ffffff; border-color: rgba(255, 255, 255, 0.7); }
 #radar-screen .topbar .chip:active { background: rgba(255, 255, 255, 0.15); }
 .brand {
   position: absolute;
   left: 50%;
-  transform: translateX(-50%);
+  top: 50%;
+  transform: translate(-50%, -50%);
   margin: 0;
-  font-size: 16px;
-  letter-spacing: 0.25em;
-  font-weight: 700;
-  color: var(--ink);
-  font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+  line-height: 0;
+  pointer-events: none;
+}
+.brand-logo {
+  display: block;
+  height: 30px;
+  width: auto;
+  overflow: visible;
 }
 
 .chip {
